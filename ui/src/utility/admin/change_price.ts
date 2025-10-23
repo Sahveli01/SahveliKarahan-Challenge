@@ -3,10 +3,14 @@ import { Transaction } from "@mysten/sui/transactions";
 export const changePrice = (packageId: string, listHeroId: string, newPriceInSui: string, adminCapId: string) => {
   const tx = new Transaction();
 
-  // HATA 2 ve 3 DÜZELTİLDİ: Boşluklar silindi ve BigInt yerine Number kullanıldı
-  const newPriceInMist = Number(newPriceInSui) * 1000000000;
+  // 1. "0.04" gibi bir ondalıklı string'i önce Number'a çevirip MIST ile çarpıyoruz
+  //    (Boşlukları olmayan 1000000000 kullanıyoruz)
+  const priceAsNumber = Number(newPriceInSui) * 1000000000;
 
-  // HATA 1 DÜZELTİLDİ: 'target:' formatı yerine yeni format kullanıldı
+  // 2. Bu büyük sayıyı, hata olmasın diye BigInt'e çeviriyoruz
+  const newPriceInMist = BigInt(priceAsNumber);
+
+  // 3. 'target:' formatı yerine yeni formatı kullanıyoruz
   tx.moveCall({
     package: packageId,
     module: 'marketplace',
@@ -14,7 +18,9 @@ export const changePrice = (packageId: string, listHeroId: string, newPriceInSui
     arguments: [
       tx.object(adminCapId),
       tx.object(listHeroId),
-      tx.pure.u64(newPriceInMist)
+      // 4. tx.pure.u64 fonksiyonuna BigInt'i metin (string) olarak veriyoruz.
+      //    Bu, en güvenli yöntemdir.
+      tx.pure.u64(newPriceInMist.toString())
     ],
   });
 
