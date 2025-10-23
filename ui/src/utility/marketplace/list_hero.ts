@@ -11,7 +11,7 @@ export const listHero = (
 
   tx.moveCall({
   package: packageId,
-  module: 'hero',
+  module: 'marketplace',
   function: 'list_hero',
   arguments: [
     tx.object(heroId),
