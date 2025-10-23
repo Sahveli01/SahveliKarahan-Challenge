@@ -5,7 +5,7 @@ export const changePrice = (packageId: string, listHeroId: string, newPriceInSui
   
   const newPriceInMist = BigInt(newPriceInSui) * 1_000_000_000n;
   tx.moveCall({
-    target: `${packageId}::marketplace::change_the_price`,
+    target: `${packageId}::admin::change_the_price`,
     arguments: [
       tx.object(adminCapId),
       tx.object(listHeroId),
