@@ -66,7 +66,7 @@ public fun list_hero(nft: Hero, price: u64, ctx: &mut TxContext) {
 }
 
 #[allow(lint(self_transfer))]
-public fun buy_hero(list_hero: ListHero, coin: Coin<SUI>, ctx: &mut TxContext) {
+public entry fun buy_hero(list_hero: ListHero, coin: Coin<SUI>, ctx: &mut TxContext) {
     let ListHero { id, nft, price, seller } = list_hero;
     assert!(coin::value(&coin) == price, EInvalidPayment);
     transfer::public_transfer(coin, seller);
