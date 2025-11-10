@@ -48,14 +48,6 @@ public fun create_hero(name: String, image_url: String, power: u64, ctx: &mut Tx
     };
     transfer::freeze_object(metadata);
 
-    // Emit HeroCreated event
-    event::emit(HeroCreated {
-        hero_id,
-        name,
-        image_url,
-        power,
-        timestamp: ctx.epoch_timestamp_ms(),
-    });
 }
 
 // ========= GETTER FUNCTIONS =========
