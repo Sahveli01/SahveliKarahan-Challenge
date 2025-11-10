@@ -1,3 +1,6 @@
+
+module challenge::hero {
+
 // ========= EVENTS =========
 
 public struct HeroCreated has copy, drop {
@@ -7,7 +10,6 @@ public struct HeroCreated has copy, drop {
     power: u64,
     timestamp: u64,
 }
-module challenge::hero;
 
 use std::string::String;
 
@@ -31,12 +33,10 @@ public fun create_hero(name: String, image_url: String, power: u64, ctx: &mut Tx
     // Create the Hero object with a fresh id and the provided fields
     let hero = Hero {
         id: object::new(ctx),
-        name: name.clone(),
-        image_url: image_url.clone(),
+        name: name,
+        image_url: image_url,
         power,
     };
-
-    let hero_id = object::id(&hero);
 
     // Transfer the newly created hero to the transaction sender
     transfer::transfer(hero, ctx.sender());
@@ -70,4 +70,6 @@ public fun hero_image_url(hero: &Hero): String {
 public fun hero_id(hero: &Hero): ID {
     object::id(hero)
 }
+
+} // end module
 
