@@ -1,3 +1,12 @@
+// ========= EVENTS =========
+
+public struct HeroCreated has copy, drop {
+    hero_id: ID,
+    name: String,
+    image_url: String,
+    power: u64,
+    timestamp: u64,
+}
 module challenge::hero;
 
 use std::string::String;
@@ -19,16 +28,34 @@ public struct HeroMetadata has key, store {
 
 #[allow(lint(self_transfer))]
 public fun create_hero(name: String, image_url: String, power: u64, ctx: &mut TxContext) {
-    
-    // TODO: Create a new Hero struct with the given parameters
-        // Hints:
-        // Use object::new(ctx) to create a unique ID
-        // Set name, image_url, and power fields
-    // TODO: Transfer the hero to the transaction sender
-    // TODO: Create HeroMetadata and freeze it for tracking
-        // Hints:
-        // Use ctx.epoch_timestamp_ms() for timestamp
-    //TODO: Use transfer::freeze_object() to make metadata immutable
+    // Create the Hero object with a fresh id and the provided fields
+    let hero = Hero {
+        id: object::new(ctx),
+        name: name.clone(),
+        image_url: image_url.clone(),
+        power,
+    };
+
+    let hero_id = object::id(&hero);
+
+    // Transfer the newly created hero to the transaction sender
+    transfer::transfer(hero, ctx.sender());
+
+    // Create metadata for the hero and freeze it so it is immutable
+    let metadata = HeroMetadata {
+        id: object::new(ctx),
+        timestamp: ctx.epoch_timestamp_ms(),
+    };
+    transfer::freeze_object(metadata);
+
+    // Emit HeroCreated event
+    event::emit(HeroCreated {
+        hero_id,
+        name,
+        image_url,
+        power,
+        timestamp: ctx.epoch_timestamp_ms(),
+    });
 }
 
 // ========= GETTER FUNCTIONS =========
